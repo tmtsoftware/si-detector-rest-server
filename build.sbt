@@ -13,7 +13,7 @@ val `galil-prototype-version` = "0.1-SNAPSHOT"
 libraryDependencies += "org.tmt" %% "galil-commands" % `galil-prototype-version`
 libraryDependencies += "org.tmt" %% "galil-client" % `galil-prototype-version`
 
-libraryDependencies += "com.github.tmtsoftware.csw" %% "csw-framework" % "0.1-SNAPSHOT"
+libraryDependencies += "com.github.tmtsoftware.csw" %% "csw-framework" % "0.7.0-RC1"
 
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 

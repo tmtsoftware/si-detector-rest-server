@@ -23,9 +23,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 
-
-case class AssemblyApiFormInput(axesListString: String, stageName: String, positionsString: String, positionMethod: String, positionCoords: String)
-
 /**
   * Takes HTTP requests and produces JSON.
   */
@@ -59,27 +56,11 @@ class GsController @Inject()(cc: GsControllerComponents)(implicit ec: ExecutionC
 
 
   println("ABOUT TO GET HCD COMMAND")
-  private val hcdCommand = hcdCommandService("SidetectorHcd");
+  private val hcdCommand = hcdCommandService("JSidetectorHcd")
 
 
 
   //LoggingSystemFactory.start("GalilHcdClientApp", "0.1", host, system)
-
-  
-  
-  private val form: Form[AssemblyApiFormInput] = {
-    import play.api.data.Forms._
-
-    Form(
-      mapping(
-        "axesListString" -> nonEmptyText,
-        "stageName" -> nonEmptyText,
-        "positionsString" -> nonEmptyText,
-        "positionMethod" -> nonEmptyText,
-        "positionCoords" -> nonEmptyText
-      )(AssemblyApiFormInput.apply)(AssemblyApiFormInput.unapply)
-    )
-  }
 
 
 
