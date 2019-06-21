@@ -9,11 +9,11 @@ libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "4.
 libraryDependencies += "com.netaporter" %% "scala-uri" % "0.4.16"
 libraryDependencies += "net.codingwell" %% "scala-guice" % "4.1.1"
 
-val `galil-prototype-version` = "0.1-SNAPSHOT"
-libraryDependencies += "org.tmt" %% "galil-commands" % `galil-prototype-version`
-libraryDependencies += "org.tmt" %% "galil-client" % `galil-prototype-version`
+//val `galil-prototype-version` = "0.1-SNAPSHOT"
+//libraryDependencies += "org.tmt" %% "galil-commands" % `galil-prototype-version`
+//libraryDependencies += "org.tmt" %% "galil-client" % `galil-prototype-version`
 
-libraryDependencies += "com.github.tmtsoftware.csw" %% "csw-framework" % "0.7.0-RC1"
+libraryDependencies += "com.github.tmtsoftware.csw" %% "csw-framework" % "0.7.0"
 
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 

@@ -7,15 +7,12 @@ import csw.command.api.scaladsl.CommandService
 import csw.command.client.CommandServiceFactory
 import csw.framework.CswClientWiring
 import csw.framework.commons.CoordinatedShutdownReasons.ApplicationFinishedReason
-import csw.framework.models.CswContext
 import csw.location.api.models.ComponentType.{Assembly, HCD}
 import csw.location.api.models.Connection.AkkaConnection
 import csw.location.api.models.{AkkaLocation, ComponentId, ComponentType}
 import csw.params.commands.{CommandName, CommandResponse, Setup}
-import csw.params.core.generics.{Key, KeyType}
-import csw.params.core.models.{Id, Prefix}
+import csw.params.core.models.Prefix
 import javax.inject.Inject
-import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc._
 
@@ -26,7 +23,7 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * Takes HTTP requests and produces JSON.
   */
-class GsController @Inject()(cc: GsControllerComponents)(implicit ec: ExecutionContext)
+class GsController @Inject()(cc: GsControllerComponents)
   extends GsBaseController(cc) {
 
   //  private val logger = Logger(getClass)
@@ -34,8 +31,8 @@ class GsController @Inject()(cc: GsControllerComponents)(implicit ec: ExecutionC
 
   lazy val clientWiring = new CswClientWiring
   import clientWiring._
-  lazy val cswContext: CswContext = clientWiring.cswContext
-  import cswContext._
+  import wiring._
+  import actorRuntime._
 
   def assemblyCommandService(assemblyName: String): CommandService = createCommandService(getAkkaLocation(assemblyName, Assembly))
 
@@ -67,6 +64,7 @@ class GsController @Inject()(cc: GsControllerComponents)(implicit ec: ExecutionC
   // HCD Commands
 
   def getMetaData(): Action[AnyContent] = GsAction.async { implicit request =>
+    implicit val ec: ExecutionContext = actorSystem.executionContext
     getMetaDataFromHcd().map { response =>
       Ok(Json.toJson(response.toString))
     }

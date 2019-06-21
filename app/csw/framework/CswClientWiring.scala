@@ -1,7 +1,5 @@
 package csw.framework
 
-import akka.actor.typed.ActorSystem
-import akka.actor.typed.scaladsl.adapter.UntypedActorSystemOps
 import csw.client.utils.Extensions.FutureExt
 import csw.command.client.models.framework.{ComponentInfo, LocationServiceUsage}
 import csw.framework.internal.wiring.{CswFrameworkSystem, FrameworkWiring}
@@ -17,8 +15,7 @@ class CswClientWiring {
   import actorRuntime._
 
   lazy val timeout: FiniteDuration                         = 20.seconds
-  implicit lazy val typedSystem: ActorSystem[Nothing]      = system.toTyped
-  implicit lazy val cswFrameworkSystem: CswFrameworkSystem = new CswFrameworkSystem(system)
+  implicit lazy val cswFrameworkSystem: CswFrameworkSystem = new CswFrameworkSystem(typedSystem)
 
   lazy val cswContext: CswContext =
     CswContext
