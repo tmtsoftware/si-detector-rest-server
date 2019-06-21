@@ -1,9 +1,9 @@
-# Play REST API for Galil HCD
+# Play REST API for SI Detector HCD
 
 This is an example project based on [Making a REST API in Play](http://developer.lightbend.com/guides/play-rest-api/index.html) 
 that shows how you could make a REST API for the Galil prototype HCD using the Play Framework.
 
-This project depends on `galil-prototype` and `csw-prod`. Be sure to run `sbt publishLocal stage` in those projects first.
+This project depends on `si-detector` and `csw`. Be sure to run `sbt publishLocal stage` in those projects first.
 
 ### Running
 
@@ -14,37 +14,22 @@ For testing, you can run these commands in separate shell tabs.
 First set the environment variables (Replace interface name, IP address and port with your own values):
 
 ```bash
-export interfaceName=enp0s31f6
-export clusterSeeds=192.168.178.77:7777
-```
-or 
-
-```csh
-setenv interfaceName enp0s31f6
-setenv clusterSeeds 192.168.178.77:7777
+export INTERFACE_NAME=ens33
+export CLUSTER_SEEDS=192.168.21.243:7777
 ```
 
 Start the location service: 
 
 ```
-csw-cluster-seed --clusterPort 7777
+csw-services.sh start --config 5000
 ```
 
-Start the galil-simulator (unless connecting to the device itself)
+
+Start the SI Detector HCD:
 
 ```
-galil-simulator
-```
+./sidetector-container-cmd-app --local /home/smichaels/Desktop/DetectorPrototype/sidetector/sidetector-deploy/src/main/resources/JSidetectorContainer.conf
 
-Start the galil HCD:
-
-```
-galil-hcd
-```
-or 
-
-```
-galil-hcd -Dgalil.host=galilhost -Dgalil.port=23
 ```
 
 You can run the server with sbt:
@@ -83,13 +68,5 @@ returns:
 ```
 "CompletedWithResult(RunId(18d51eeb-8863-48cf-8e37-86716e3d74a5),Result([TEST, test.galil.server](counts((2)NoUnits))))"
 ```
-
-### In Progress...
-
-Only a few Galil commands are implemented so far...
-
-An API for accessing the Galil DataRecord via the HCD and REST API still needs to be added.
-
-It might be simpler to implement this using akka-http. Maybe a second project will be started to try that.
 
 
