@@ -63,21 +63,59 @@ class GsController @Inject()(cc: GsControllerComponents)
 
   // HCD Commands
 
-  def getMetaData(): Action[AnyContent] = GsAction.async { implicit request =>
+  def getStatusMetaData(): Action[AnyContent] = GsAction.async { implicit request =>
     implicit val ec: ExecutionContext = actorSystem.executionContext
-    getMetaDataFromHcd().map { response =>
-      Ok(Json.toJson(response.toString))
+    getStatusMetaDataFromHcd().map { response => {
+
+      response match {
+        case resp: CommandResponse.CompletedWithResult => {
+
+          Ok(Json.toJson(resp.result));
+        }
+        case _ =>
+          Ok(Json.toJson(response.toString))
+      }
+
+    }
+
+    }
+  }
+
+  def getParameterMetaData(): Action[AnyContent] = GsAction.async { implicit request =>
+    implicit val ec: ExecutionContext = actorSystem.executionContext
+    getParameterMetaDataFromHcd().map { response => {
+
+      response match {
+        case resp: CommandResponse.CompletedWithResult => {
+
+          Ok(Json.toJson(resp.result));
+        }
+        case _ =>
+          Ok(Json.toJson(response.toString))
+      }
+
+    }
+
     }
   }
 
 
-  def getMetaDataFromHcd(): Future[CommandResponse] = {
+  def getStatusMetaDataFromHcd(): Future[CommandResponse] = {
 
-        import scala.concurrent.duration._
-        implicit val timeout: Timeout = Timeout(3.seconds)
-        val setup = Setup(source, CommandName("getMetaData"), maybeObsId)
+    import scala.concurrent.duration._
+    implicit val timeout: Timeout = Timeout(3.seconds)
+    val setup = Setup(source, CommandName("getStatusMetaData"), maybeObsId)
 
-        hcdCommand.submit(setup)
+    hcdCommand.submit(setup)
+  }
+
+  def getParameterMetaDataFromHcd(): Future[CommandResponse] = {
+
+    import scala.concurrent.duration._
+    implicit val timeout: Timeout = Timeout(3.seconds)
+    val setup = Setup(source, CommandName("getParameterMetaData"), maybeObsId)
+
+    hcdCommand.submit(setup)
   }
 
 

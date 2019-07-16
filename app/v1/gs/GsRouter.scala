@@ -16,8 +16,11 @@ class GsRouter @Inject()(controller: GsController) extends SimpleRouter {
 
     // HCD commands
 
-    case POST(p"/getMetaData") =>
-      controller.getMetaData()
+    case GET(p"/getStatusMetaData") =>
+      controller.getStatusMetaData()
+
+    case GET(p"/getParameterMetaData") =>
+      controller.getParameterMetaData()
 
 
 
