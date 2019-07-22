@@ -22,6 +22,9 @@ class GsRouter @Inject()(controller: GsController) extends SimpleRouter {
     case GET(p"/getParameterMetaData") =>
       controller.getParameterMetaData()
 
+    case GET(p"/getCommandMetaData") =>
+      controller.getCommandMetaData()
+
 
 
   }

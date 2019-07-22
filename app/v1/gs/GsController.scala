@@ -99,6 +99,24 @@ class GsController @Inject()(cc: GsControllerComponents)
     }
   }
 
+  def getCommandMetaData(): Action[AnyContent] = GsAction.async { implicit request =>
+    implicit val ec: ExecutionContext = actorSystem.executionContext
+    getCommandMetaDataFromHcd().map { response => {
+
+      response match {
+        case resp: CommandResponse.CompletedWithResult => {
+
+          Ok(Json.toJson(resp.result));
+        }
+        case _ =>
+          Ok(Json.toJson(response.toString))
+      }
+
+    }
+
+    }
+  }
+
 
   def getStatusMetaDataFromHcd(): Future[CommandResponse] = {
 
@@ -114,6 +132,15 @@ class GsController @Inject()(cc: GsControllerComponents)
     import scala.concurrent.duration._
     implicit val timeout: Timeout = Timeout(3.seconds)
     val setup = Setup(source, CommandName("getParameterMetaData"), maybeObsId)
+
+    hcdCommand.submit(setup)
+  }
+
+  def getCommandMetaDataFromHcd(): Future[CommandResponse] = {
+
+    import scala.concurrent.duration._
+    implicit val timeout: Timeout = Timeout(3.seconds)
+    val setup = Setup(source, CommandName("getCommandMetaData"), maybeObsId)
 
     hcdCommand.submit(setup)
   }
