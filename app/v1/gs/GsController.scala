@@ -11,7 +11,8 @@ import csw.location.api.models.ComponentType.{Assembly, HCD}
 import csw.location.api.models.Connection.AkkaConnection
 import csw.location.api.models.{AkkaLocation, ComponentId, ComponentType}
 import csw.params.commands.{CommandName, CommandResponse, Setup}
-import csw.params.core.models.Prefix
+import csw.params.core.generics.{Key, KeyType, Parameter}
+import csw.params.core.models.{ObsId, Prefix}
 import javax.inject.Inject
 import play.api.libs.json.Json
 import play.api.mvc._
@@ -59,7 +60,10 @@ class GsController @Inject()(cc: GsControllerComponents)
 
   //LoggingSystemFactory.start("GalilHcdClientApp", "0.1", host, system)
 
-
+  // Keys
+  val cameraHandleKey: Key[Int] = KeyType.IntKey.make("cameraHandle")
+  val displayNameKey: Key[String] = KeyType.StringKey.make("displayName")
+  val valStrKey: Key[String] = KeyType.StringKey.make("valStr")
 
   // HCD Commands
 
@@ -117,6 +121,43 @@ class GsController @Inject()(cc: GsControllerComponents)
     }
   }
 
+  def setParameterValue(obsId: Option[ObsId], cameraHandle: String, displayName: String, valStr: String): Action[AnyContent] = GsAction.async { implicit request =>
+    implicit val ec: ExecutionContext = actorSystem.executionContext
+    setParameterValueFromHcd(cameraHandle, displayName, valStr).map { response => {
+
+      response match {
+        case resp: CommandResponse.CompletedWithResult => {
+
+          Ok(Json.toJson(resp.result));
+        }
+        case _ =>
+          Ok(Json.toJson(response.toString))
+      }
+
+    }
+    }
+  }
+
+  def sendParameters(obsId: Option[ObsId], cameraHandle: String): Action[AnyContent] = GsAction.async { implicit request =>
+    implicit val ec: ExecutionContext = actorSystem.executionContext
+    sendParametersFromHcd(cameraHandle).map { response => {
+
+      response match {
+        case resp: CommandResponse.CompletedWithResult => {
+
+          Ok(Json.toJson(resp.result));
+        }
+        case _ =>
+          Ok(Json.toJson(response.toString))
+      }
+
+    }
+    }
+  }
+
+
+
+
 
   def getStatusMetaDataFromHcd(): Future[CommandResponse] = {
 
@@ -141,6 +182,35 @@ class GsController @Inject()(cc: GsControllerComponents)
     import scala.concurrent.duration._
     implicit val timeout: Timeout = Timeout(3.seconds)
     val setup = Setup(source, CommandName("getCommandMetaData"), maybeObsId)
+
+    hcdCommand.submit(setup)
+  }
+
+  def setParameterValueFromHcd(cameraHandle: String, displayName: String, valStr: String): Future[CommandResponse] = {
+
+    import scala.concurrent.duration._
+    implicit val timeout: Timeout = Timeout(3.seconds)
+
+
+    val cameraHandleParam: Parameter[Int] = cameraHandleKey.set(cameraHandle.toInt)
+    val displayNameParam: Parameter[String] = displayNameKey.set(displayName)
+    val valStrParam: Parameter[String] = valStrKey.set(valStr)
+
+
+    val setup = Setup(source, CommandName("setParameterValue"), maybeObsId).add(cameraHandleParam).add(displayNameParam).add(valStrParam)
+
+    hcdCommand.submit(setup)
+  }
+
+  def sendParametersFromHcd(cameraHandle: String): Future[CommandResponse] = {
+
+    import scala.concurrent.duration._
+    implicit val timeout: Timeout = Timeout(3.seconds)
+
+
+    val cameraHandleParam: Parameter[Int] = cameraHandleKey.set(cameraHandle.toInt)
+
+    val setup = Setup(source, CommandName("sendParameters"), maybeObsId).add(cameraHandleParam)
 
     hcdCommand.submit(setup)
   }
