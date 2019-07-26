@@ -26,15 +26,16 @@ class GsRouter @Inject()(controller: GsController) extends SimpleRouter {
       controller.getCommandMetaData()
 
     // set a parameter value
-    case POST(p"/setParameterValue" ? q_o"obsId=$maybeObsId" & q"cameraHandle=$cameraHandle" & q"displayName=$displayName" & q"valStr=$valStr") =>
-      controller.setParameterValue(maybeObsId.map(ObsId(_)), cameraHandle, displayName, valStr)
+    case POST(p"/setParameterValue" ? q_o"obsId=$maybeObsId" & q"displayName=$displayName" & q"valStr=$valStr") =>
+      controller.setParameterValue(maybeObsId.map(ObsId(_)), displayName, valStr)
 
     // send parameters
-    case POST(p"/sendParameters" ? q_o"obsId=$maybeObsId" & q"cameraHandle=$cameraHandle") =>
-      controller.sendParameters(maybeObsId.map(ObsId(_)), cameraHandle)
+    case POST(p"/sendParameters" ? q_o"obsId=$maybeObsId" ) =>
+      controller.sendParameters(maybeObsId.map(ObsId(_)))
 
-
-
+    // issue command
+    case POST(p"/issueCommand" ? q_o"obsId=$maybeObsId" & q"postName=$postName" & q"argStr=$argStr") =>
+      controller.issueCommand(maybeObsId.map(ObsId(_)), postName, argStr)
 
 
   }
@@ -49,19 +50,6 @@ object GsRouter {
 
 
 
-  case "sendParameters":
-
-  cameraHandleParam = controlCommand.paramSet().find(x -> x.keyName().equals("cameraHandle")).get();
-
-  cameraHandle = (Integer)cameraHandleParam.jGet(0).get();
-
-  try {
-  SpectralInstrumentsApi.sendParameters(cameraHandle);
-  return new CommandResponse.Completed(controlCommand.runId());
-
-} catch (Exception e) {
-  return new CommandResponse.Error(controlCommand.runId(), e.getMessage());
-}
 
 
 
